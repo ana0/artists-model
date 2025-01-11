@@ -3,7 +3,7 @@ const db = require('../db')
 
 const readPolls = (req, res)  => {
   if (req.params.top) {
-    console.log("calling read with all")
+    console.log("calling get top poll")
     // TO-DO parse int on id
     return db.get(`SELECT * FROM topPoll WHERE ID = 1;`, async (err1, row) => {
       if (err1) {

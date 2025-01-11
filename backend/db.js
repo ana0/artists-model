@@ -15,6 +15,7 @@ db.serialize(async () => {
     "FOREIGN KEY(pollsId) REFERENCES polls(id))");
   db.run("CREATE TABLE IF NOT EXISTS topPoll (id INTEGER PRIMARY KEY ASC, pollsId INT, FOREIGN KEY(pollsId) REFERENCES polls(id))");
   db.run("CREATE TABLE IF NOT EXISTS sessions (id INTEGER PRIMARY KEY ASC, sessionName TEXT, pollsId INT, FOREIGN KEY(pollsId) REFERENCES polls(id))");
+  db.run("CREATE TABLE IF NOT EXISTS topSession (id INTEGER PRIMARY KEY ASC, sessionId INT, FOREIGN KEY(sessionId) REFERENCES sessions(id))");
   db.run("CREATE TABLE IF NOT EXISTS hasVoted (id INTEGER PRIMARY KEY ASC, sessionId INT, pollsId INT, FOREIGN KEY(pollsId) REFERENCES polls(id)), " + 
     "FOREIGN KEY(sessionId) REFERENCES sessions(id)");
   db.run("CREATE TABLE IF NOT EXISTS votes " +

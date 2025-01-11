@@ -1,5 +1,6 @@
 const bodyParser = require('body-parser')
 const polls = require('./controllers/polls')
+const sessions = require('./controllers/sessions')
 const votes = require('./controllers/votes')
 
 module.exports = (app) => {
@@ -13,6 +14,11 @@ module.exports = (app) => {
   app.post('/workshop/polls', polls.createPoll)
   app.put('/workshop/polls', polls.updatePoll)
   app.delete('/workshop/polls', polls.deletePoll)
+
+  app.get('/workshop/sessions', sessions.readSessions)
+  app.get('/workshop/sessions/:top', sessions.readSessions)
+  app.post('/workshop/sessions', sessions.createSession)
+  app.put('/workshop/sessions', sessions.updateSession)
 
   app.get('/workshop/votes', (req, res) => res.status(200).json('Votes endpoint'))
   app.get('/workshop/votes/:id', votes.readVotes)
