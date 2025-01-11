@@ -58,7 +58,6 @@ const updateSession = (req, res)  => {
   })
 }
 
-
 module.exports = {
   readSessions,
   createSession,

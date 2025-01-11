@@ -4,7 +4,6 @@ const db = require('../db')
 const readPolls = (req, res)  => {
   if (req.params.top) {
     console.log("calling get top poll")
-    // TO-DO parse int on id
     return db.get(`SELECT * FROM topPoll WHERE ID = 1;`, async (err1, row) => {
       if (err1) {
         console.log(err1)
@@ -12,6 +11,7 @@ const readPolls = (req, res)  => {
       }
       if (!row) return res.status(401).json({ error: 'Not found' });
       console.log(row.pollsId)
+      // get all answers for this poll, as well as the number of votes for each answer
       const query = `SELECT polls.id, question, type, correct, answer, closed, pollItems.id as pollItemsId, 
       (select COUNT(votes.id) from votes where votes.pollItemsId = pollItems.id) as votes
       FROM polls 
@@ -28,9 +28,8 @@ const readPolls = (req, res)  => {
         return res.status(200).json({ poll })
       })
     })
-
   }
-  //return db.all(`SELECT question, answer, pollsId FROM polls INNER JOIN pollItems ON pollItems.pollsId = polls.id;`, async (err, polls) => {
+  // return all polls
   return db.all(`SELECT id, question, type FROM polls;`, async (err, polls) => {
     if (err) {
       console.log(err);
@@ -45,8 +44,7 @@ const readPolls = (req, res)  => {
 const createPoll = (req, res) => {
   let pollId
   const { question, type, answers } = req.body
-  console.log(answers)
-  // must use old function notation
+  // create poll and all its answers
   db.run("INSERT INTO polls(question, type) VALUES (?, ?)", question, type, function(err) {
     if (err) {
       console.log(err)
@@ -59,46 +57,60 @@ const createPoll = (req, res) => {
       return stmt.run([a.answer, a.correct, pollId]);
     })
     stmt.finalize();
-    // db.each("SELECT rowid AS id, answer, pollsId FROM pollItems", function(err, row) {
-    //     console.log(row.id + ": " + row.answer + ' ' + row.pollsId);
-    // });
-    res.status(200).json(`Create poll ${pollId}`)
+    res.status(200).json(`Created poll ${pollId}`)
   })
 }
 
 const updatePoll = (req, res)  => {
-  console.log('set top poll')
-  let pollId
-  const { topPoll } = req.body
-  db.run("INSERT OR REPLACE INTO topPoll (ID, pollsId) VALUES (1, ?);" , topPoll, function(err) {
-    if (err) {
-      console.log(err)
+  // get current top poll, find winning answer, open next top poll
+  db.get(`SELECT * FROM topPoll WHERE ID = 1;`, async (err, row) => {
+    if (err1) {
+      console.log(err1)
       return res.status(500).json({ error: 'Server Error' });
     }
-    console.log(`updated top poll to ${topPoll}`)
-    db.get("SELECT * FROM topPoll WHERE ID = 1;", function(err, row) {
+    if (!row) return res.status(401).json({ error: 'Not found' });
+    console.log(row.pollsId)
+    // get all answers for this poll, as well as the number of votes for each answer
+    const query = `SELECT polls.id, question, type, correct, answer, closed, pollItems.id as pollItemsId, pollItems.nextPoll as nextPoll,
+    (select COUNT(votes.id) from votes where votes.pollItemsId = pollItems.id) as votes
+    FROM polls 
+    INNER JOIN pollItems ON pollItems.pollsId = polls.id 
+    WHERE polls.id IS ${row.pollsId};`
+
+    return db.all(query, async (err, poll) => {
       if (err) {
         console.log(err)
         return res.status(500).json({ error: 'Server Error' });
       }
-      console.log('Row from topPoll table:', row);
-      res.status(200).json(`Update poll ${topPoll}`)
-    });
-    
+      console.log("poll", poll)
+      if (!poll) return res.status(401).json({ error: 'Not found' });
+      // to-do: handle tie
+      let winningAnswer = poll[0].pollItemsId > poll[1].pollItemsId ? poll[0] : poll[1];
+      // to-do: handle last poll
+      db.run("INSERT OR REPLACE INTO topPoll (ID, pollsId) VALUES (1, ?);", winningAnswer.nextPoll, function(err) {
+        if (err) {
+          console.log(err)
+          return res.status(500).json({ error: 'Server Error' });
+        }
+        console.log(`updated top poll to ${winningAnswer.nextPoll}`)
+        res.status(200).json(`Update poll ${winningAnswer.nextPoll}`)
+      })
+    })
   })
 }
 
 const deletePoll = (req, res)  => {
-  const { toClose } = req.body
-  console.log(req.body)
-  return db.run("UPDATE polls SET closed = 1 WHERE id = ?;", toClose, function(err) {
+  // close current top poll
+  db.get(`SELECT * FROM topPoll WHERE ID = 1;`, async (err, row) => {
     if (err) {
       console.log(err)
       return res.status(500).json({ error: 'Server Error' });
     }
-    db.get("SELECT * FROM polls WHERE ID = ?;", toClose, function(err, row) {
-      console.log(`closing poll ${toClose}`)
-      console.log(row)
+    return db.run("UPDATE polls SET closed = 1 WHERE id = ?;", row.pollsId, function(err) {
+      if (err) {
+        console.log(err)
+        return res.status(500).json({ error: 'Server Error' });
+      }
       return res.status(200).json(`Close poll ${toClose}`)
     })
   })
