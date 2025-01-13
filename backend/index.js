@@ -27,7 +27,6 @@ const frontend =  new URL("https://sonar-workshop.netlify.app");
 app.use(cors({ origin: true }))
 routes(app)
 
-console.log(app._router.stack)
 
 const port = process.env.PORT || 8040
 

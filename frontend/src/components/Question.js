@@ -1,7 +1,7 @@
 import React, { useState, useEffect, Fragment, useRef } from 'react';
 import axios from 'axios';
 
-const Question = ({ question, updatePoints }) => {
+const Question = ({ question, updatePoints, session }) => {
   const [selectedOption, setSelectedOption] = useState(null);
   const [isError, setIsError] = useState(false);
   const [hasVoted, setHasVoted] = useState(false);
@@ -22,7 +22,8 @@ const Question = ({ question, updatePoints }) => {
       await axios.post(`${process.env.REACT_APP_API_URL}votes`, {
         pollId: question[0].id,
         pollItemsId: selectedOption,
-        sessionId: localStorage.getItem('voterID'),
+        voterId: localStorage.getItem('voterID'),
+        sessionId: session
       })
       setHasVoted(true)
       localStorage.setItem('lastPoll', question[0].id);

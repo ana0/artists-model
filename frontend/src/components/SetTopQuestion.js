@@ -24,8 +24,7 @@ const CreateQuestion = () => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <h3>Set top question</h3>
-      <p><input {...register("topPoll")} /></p>
+      <h3>Open Next Question</h3>
       {/* errors will return when field validation fails  */}
       {errors.text && <p><span className="error">Sorry, error</span></p>}
 

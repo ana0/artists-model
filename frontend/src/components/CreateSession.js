@@ -2,7 +2,7 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 
-const CloseQuestion = () => {
+const CreateSession = () => {
   const {
     register,
     handleSubmit,
@@ -11,7 +11,7 @@ const CloseQuestion = () => {
 
   const onSubmit = (data) => {
     console.log(data)
-    axios.delete(`${process.env.REACT_APP_API_URL}polls`, { data })
+    axios.post(`${process.env.REACT_APP_API_URL}sessions`, data)
     .then(function (response) {
       console.log(response);
     })
@@ -24,8 +24,9 @@ const CloseQuestion = () => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <h3>Close question</h3>
-      {/* <p><input {...register("toClose")} /></p> */}
+      <h3>Create Session</h3>
+      <p><input {...register("name")} /></p>
+      <p><input {...register("pollsId")} /></p>
       {/* errors will return when field validation fails  */}
       {errors.text && <p><span className="error">Sorry, error</span></p>}
 
@@ -34,4 +35,4 @@ const CloseQuestion = () => {
   )
 }
 
-export default CloseQuestion;
+export default CreateSession;

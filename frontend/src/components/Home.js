@@ -15,6 +15,7 @@ const Home = () => {
     localStorage.setItem('points', 6);
   }
   const [currentQuestion, setCurrentQuestion] = useState(null); 
+  const [session, setSession] = useState(null);
   const [data, setData] = useState(null);
 
   const updatePoints = (newPoints) => {
@@ -36,6 +37,7 @@ const Home = () => {
             console.log("response", response.data.poll[0].id)
             currentQuestionRef.current = response.data.poll[0].id;
             setCurrentQuestion(response.data.poll[0].id)
+            setSession(response.data.session.sessionId)
 
             localStorage.setItem('voteCalcDone', false);
             console.log("current question updated")
@@ -53,9 +55,7 @@ const Home = () => {
           <p>Voter ID: {voterId}</p>
           <p>Points: {points}</p>
         </div>
-        {points <= 0 ? <p>Game Over</p> : 
-          data && <Question question={data.poll} updatePoints={updatePoints} />
-        }
+        {data && <Question question={data.poll} updatePoints={updatePoints} session={session} />}
       </View>
     </Fragment>
   );
