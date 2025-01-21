@@ -4,7 +4,6 @@ import axios from "axios";
 
 const CreateQuestion = () => {
   const {
-    register,
     handleSubmit,
     formState: { errors },
   } = useForm()

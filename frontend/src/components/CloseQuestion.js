@@ -4,7 +4,6 @@ import axios from "axios";
 
 const CloseQuestion = () => {
   const {
-    register,
     handleSubmit,
     formState: { errors },
   } = useForm()
