@@ -18,29 +18,36 @@ const readPolls = (req, res)  => {
         }
         // get all answers for this poll, as well as the number of votes for each answer
         //console.log(session)
-        const query = `SELECT polls.id, question, type, correct, answer, closed, pollItems.id as pollItemsId, 
+        const query = `SELECT polls.id, question, answer, closed, pollItems.id as pollItemsId, 
         (select COUNT(votes.id) from votes where votes.pollItemsId = pollItems.id and votes.sessionId = ${session.sessionId}) as votes
         FROM polls 
         INNER JOIN pollItems ON pollItems.pollsId = polls.id 
         WHERE polls.id IS ${row.pollsId};`
+
+        
 
         return db.all(query, async (err, poll) => {
           if (err) {
             console.log(err)
             return res.status(500).json({ error: 'Server Error' });
           }
-          //console.log(poll)
-          return db.get("select * from votes;", async (err, votes) => {
-            //console.log(votes)
-            if (!poll) return res.status(401).json({ error: 'Not found' });
-            return res.status(200).json({ poll, session })
+          console.log(poll)
+          db.get("SELECT * FROM pollItems", async (err, polls) => {
+            console.log(polls)
+
+            return db.get("select * from votes;", async (err, votes) => {
+              //console.log(votes)
+              if (!poll) return res.status(401).json({ error: 'Not found' });
+              return res.status(200).json({ poll, session })
+            })
           })
+
         })
       })
     })
   }
   // return all polls
-  return db.all(`SELECT id, question, type FROM polls;`, async (err, polls) => {
+  return db.all(`SELECT id, question FROM polls;`, async (err, polls) => {
     if (err) {
       console.log(err);
       return res.status(500).json({ error: 'Server Error' });
@@ -54,18 +61,18 @@ const readPolls = (req, res)  => {
 
 const createPoll = (req, res) => {
   let pollId
-  const { question, type, answers } = req.body
+  const { question, answers } = req.body
   // create poll and all its answers
-  db.run("INSERT INTO polls(question, type) VALUES (?, ?)", question, type, function(err) {
+  db.run("INSERT INTO polls(question) VALUES (?, ?)", question, function(err) {
     if (err) {
       console.log(err)
       return res.status(500).json({ error: 'Server Error' });
     }
     console.log(`inserted question ${this.lastID}`)
     pollId = this.lastID
-    const stmt = db.prepare("INSERT INTO pollItems(answer, correct, pollsId, nextPoll) VALUES (?, ?, ?, ?)");
+    const stmt = db.prepare("INSERT INTO pollItems(answer, pollsId, nextPoll) VALUES (?, ?, ?, ?)");
     answers.map((a) => {
-      return stmt.run([a.answer, a.correct, pollId, a.nextPoll]);
+      return stmt.run([a.answer, pollId, a.nextPoll]);
     })
     stmt.finalize();
     res.status(200).json(`Created poll ${pollId}`)
@@ -86,7 +93,7 @@ const updatePoll = (req, res)  => {
         return res.status(500).json({ error: 'Server Error' });
       }
       // get all answers for this poll, as well as the number of votes for each answer
-      const query = `SELECT polls.id, question, type, correct, answer, closed, pollItems.id as pollItemsId, pollItems.nextPoll as nextPoll,
+      const query = `SELECT polls.id, question, answer, closed, pollItems.id as pollItemsId, pollItems.nextPoll as nextPoll,
       (select COUNT(votes.id) from votes where votes.pollItemsId = pollItems.id and votes.sessionId = ${session.sessionId}) as votes
       FROM polls 
       INNER JOIN pollItems ON pollItems.pollsId = polls.id 
