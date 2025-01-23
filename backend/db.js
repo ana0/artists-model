@@ -12,7 +12,7 @@ const db = new sqlite3.Database('./quiz.db', (err) => {
 db.serialize(async () => {
   db.run("CREATE TABLE IF NOT EXISTS scripts (id INTEGER PRIMARY KEY ASC, name TEXT)");
   db.run("CREATE TABLE IF NOT EXISTS polls (id INTEGER PRIMARY KEY ASC, question TEXT, tag TEXT, closed BOOLEAN DEFAULT 0)");
-  db.run("CREATE TABLE IF NOT EXISTS pollItems (id INTEGER PRIMARY KEY ASC, answer TEXT, pollsId INT, nextPoll INT, " +
+  db.run("CREATE TABLE IF NOT EXISTS pollItems (id INTEGER PRIMARY KEY ASC, answer TEXT, pollsId INT, nextPoll INT, tag TEXT, " +
     "FOREIGN KEY(pollsId) REFERENCES polls(id))");
   db.run("CREATE TABLE IF NOT EXISTS topPoll (id INTEGER PRIMARY KEY ASC, pollsId INT, FOREIGN KEY(pollsId) REFERENCES polls(id))");
   db.run("CREATE TABLE IF NOT EXISTS sessions (id INTEGER PRIMARY KEY ASC, name TEXT, pollsId INT, FOREIGN KEY(pollsId) REFERENCES polls(id))");
@@ -72,9 +72,9 @@ db.serialize(async () => {
       };
 
       // Function to insert a poll and return the pollId
-      const insertAnswer = (answer, pollId, nextPoll) => {
+      const insertAnswer = (answer, pollId, nextPoll, tag) => {
         return new Promise((resolve, reject) => {
-          db.run("INSERT INTO pollItems(answer, pollsId, nextPoll) VALUES (?, ?, ?)", [answer, pollId, nextPoll], function (err) {
+          db.run("INSERT INTO pollItems(answer, pollsId, nextPoll, tag) VALUES (?, ?, ?, ?)", [answer, pollId, nextPoll, tag], function (err) {
             if (err) {
               return reject(err);
             }
@@ -85,12 +85,13 @@ db.serialize(async () => {
 
       // Insert poll items
       for (let i = 0; i < answers.length; i++) {
+        answers[i].tag = script.passages.find(p => p.pid === answers[i].nextPassage).tags[0];
         while (script.passages.find(p => p.pid === answers[i].nextPassage).links && script.passages.find(p => p.pid === answers[i].nextPassage).links.length === 1) {
           answers[i].nextPassage = script.passages.find(p => p.pid === answers[i].nextPassage).links[0].pid;
         }
         try {
           let nextPoll = await getNextPollId(script.passages.find(p => p.pid === answers[i].nextPassage).tags[0]);
-          await insertAnswer(answers[i].answer, answers[i].pollsId, nextPoll);
+          await insertAnswer(answers[i].answer, answers[i].pollsId, nextPoll, answers[i].tag);
           console.log("answer", answers[i].answer, answers[i].pollsId, nextPoll);
 
         } catch (err) {

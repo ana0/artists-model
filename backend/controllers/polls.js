@@ -18,8 +18,9 @@ const readPolls = (req, res)  => {
         }
         // get all answers for this poll, as well as the number of votes for each answer
         //console.log(session)
-        const query = `SELECT polls.id, question, answer, closed, pollItems.id as pollItemsId, 
-        (select COUNT(votes.id) from votes where votes.pollItemsId = pollItems.id and votes.sessionId = ${session.sessionId}) as votes
+        const query = `SELECT polls.id, question, answer, polls.tag as pollTag, closed, pollItems.tag as tag, pollItems.id as pollItemsId, pollItems.nextPoll as nextPoll,
+        (select COUNT(votes.id) from votes where votes.pollItemsId = pollItems.id and votes.sessionId = ${session.sessionId}) as votes,
+        (select tag from polls where polls.id = nextPoll) as nextTag
         FROM polls 
         INNER JOIN pollItems ON pollItems.pollsId = polls.id 
         WHERE polls.id IS ${row.pollsId};`

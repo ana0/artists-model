@@ -24,7 +24,8 @@ const frontend =  new URL("https://sonar-workshop.netlify.app");
 //   })
 // );
 
-app.use(cors({ origin: true }))
+//app.use(cors({ origin: true }))
+app.use(cors())
 routes(app)
 
 
