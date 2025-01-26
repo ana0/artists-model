@@ -46,10 +46,12 @@ const Question = ({ question, session }) => {
             <input type="radio" value={question[0].pollItemsId} checked={selectedOption === question[0].pollItemsId} onChange={handleOptionChange} />
             {question[0].answer}
           </label>
-          <label>
-            <input type="radio" value={question[1].pollItemsId} checked={selectedOption === question[1].pollItemsId} onChange={handleOptionChange} />
-            {question[1].answer}
-          </label>
+          {question[1] &&
+            <label>
+              <input type="radio" value={question[1].pollItemsId} checked={selectedOption === question[1].pollItemsId} onChange={handleOptionChange} />
+              {question[1].answer}
+            </label>
+          }
           <button onClick={handleSubmit}>Submit</button>
       </Fragment>
       )}
@@ -58,7 +60,7 @@ const Question = ({ question, session }) => {
         <Fragment>
           <div>The poll is closed. Results: </div>
           <p>{`${question[0].answer}: ${question[0].votes}`}</p>
-          <p>{`${question[1].answer}: ${question[1].votes}`}</p>
+          {question[1] && <p>{`${question[1].answer}: ${question[1].votes}`}</p>}
           {parseInt(localStorage.getItem('lastPoll')) === question[0].id ? 
             question[0].type === "pred" ?
               <Fragment>
