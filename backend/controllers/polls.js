@@ -64,7 +64,7 @@ const createPoll = (req, res) => {
   let pollId
   const { question, answers } = req.body
   // create poll and all its answers
-  db.run("INSERT INTO polls(question) VALUES (?, ?)", question, function(err) {
+  db.run("INSERT INTO polls(question) VALUES (?)", question, function(err) {
     if (err) {
       console.log(err)
       return res.status(500).json({ error: 'Server Error' });
