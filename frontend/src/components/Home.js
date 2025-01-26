@@ -10,19 +10,10 @@ const Home = () => {
   const voterId = localStorage.getItem('voterID') || nanoid();
   //const [points, setPoints] = useState(0);
   localStorage.setItem('voterID', voterId);
-  const points = parseInt(localStorage.getItem('points')) || 6; 
-  if (!localStorage.getItem('points') || isNaN(parseInt(localStorage.getItem('points')))) {
-    localStorage.setItem('points', 6);
-  }
+
   const [currentQuestion, setCurrentQuestion] = useState(null); 
   const [session, setSession] = useState(null);
   const [data, setData] = useState(null);
-
-  const updatePoints = (newPoints) => {
-    //setPoints(newPoints);
-    console.log("updating points", newPoints)
-    localStorage.setItem('points', newPoints);
-  };
 
   const currentQuestionRef = useRef(null);
 
@@ -53,9 +44,8 @@ const Home = () => {
       <View>
         <div className="header">
           <p>Voter ID: {voterId}</p>
-          <p>Points: {points}</p>
         </div>
-        {data && <Question question={data.poll} updatePoints={updatePoints} session={session} />}
+        {data && <Question question={data.poll} session={session} />}
       </View>
     </Fragment>
   );
