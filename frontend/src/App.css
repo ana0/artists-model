@@ -53,6 +53,8 @@ h2 {
   font-family: 'FrauenScript', serif; /* Fancy font for the title */
   margin-bottom: 2rem;
   line-height: 76px;
+  text-align: center;
+  white-space: nowrap;
 }
 
 h3 {
@@ -65,6 +67,13 @@ h3 {
   line-height: 59px;
 }
 
+.thank-you-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
 button {
   width: 100%;
   padding: 37px 15px;
@@ -75,6 +84,7 @@ button {
   font-size: 22px;
   font-weight: 700;
   font-family: "Arial", sans-serif;
+  letter-spacing: 0.02em;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -108,6 +118,7 @@ button {
   font-size: 22px;
   font-weight: 700;
   text-transform: uppercase;
+  letter-spacing: 0.02em;
 }
 
 .note {
@@ -116,6 +127,7 @@ button {
   text-transform: uppercase;
   padding: 3rem 0rem;
   font-family: "Arial", sans-serif;
+  letter-spacing: 0.02em;
 }
 
 .results .option {

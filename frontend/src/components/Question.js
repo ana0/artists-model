@@ -80,7 +80,9 @@ const Question = ({ question, session }) => {
           </button>
       </Fragment>
       )}
-      {hasVoted && !question[0].closed && <h2>Thank you<br />for voting!</h2>}
+      {hasVoted && !question[0].closed && (
+        <div className="thank-you-container"><h2>Thank you<br />for voting!</h2></div>
+      )}
       {question[0].closed ? (
         <Fragment>
           <h3>Results</h3>
