@@ -42,10 +42,8 @@ const Home = () => {
   return (
     <Fragment>
       <View>
-        <div className="header">
-          <p>Voter ID: {voterId}</p>
-        </div>
-        {data && <Question question={data.poll} session={session} />}
+        <div class="background-overlay"></div>
+        {data ? <Question question={data.poll} session={session} /> : <h1>Artist's<br />Model</h1>}
       </View>
     </Fragment>
   );
