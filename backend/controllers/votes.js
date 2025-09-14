@@ -2,7 +2,7 @@ const db = require('../db')
 
 const readVotes = (req, res) => {
   // fairly sure this was never used??
-  
+
   // console.log('read votes')
   // if (!req.params.id) return res.status(403).json({ error: 'Must send poll id'})
   // const pollId = req.params.id;
@@ -34,7 +34,6 @@ const createVotes = (req, res) => {
   console.log(req.body)
   let { pollItemsId, sessionId, pollId, voterId } = req.body
   // must use old function notation
-
   return db.get(`SELECT rowid AS id FROM votes WHERE sessionId == '${sessionId}' AND pollsId == '${pollId}' AND voterId == '${voterId}'`, function(err, hasVoted) {
     if (err) {
       console.log(err)
