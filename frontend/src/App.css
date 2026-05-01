@@ -2,6 +2,31 @@
   text-align: center;
 }
 
+.question-status-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  padding: 12px 20px;
+  font-family: "Arial", sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: white;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.question-status-bar.open {
+  background-color: #2e7d32;
+}
+
+.question-status-bar.closed {
+  background-color: #c62828;
+}
+
 @media (max-width: 600px) {
   .header {
     flex-direction: column;
